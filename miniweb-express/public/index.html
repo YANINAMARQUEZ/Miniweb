@@ -10,5 +10,18 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <script>
+  fetch('https://miniweb-backend.onrender.com/api/consulta')
+    .then(response => response.json())
+    .then(data => {
+      console.log('Respuesta del backend:', data);
+      // Podés mostrarlo en el DOM si querés
+    })
+    .catch(error => {
+      console.error('Error al consultar la API:', error);
+    });
+</script>
+
   </body>
 </html>
