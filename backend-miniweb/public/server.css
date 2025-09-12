@@ -1,0 +1,14 @@
+/* server.css */
+body {
+  background-color: lab(47.05% 66.06 46.32) 46.32);
+  font-family: 'Segoe UI', sans-serif;
+    color: #333;
+}
+
+h1 {
+  color: #a8cc45ff;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* Agregá más estilos institucionales aquí */
