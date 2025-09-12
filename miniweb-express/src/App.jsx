@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { renderToStaticMarkup } from 'react-dom/server';
 import Mainlayout from './Componentes/Layout/MainLayout';
 import PlantillaSelector from './Componentes/Plantillas/PlantillaSelector';
-import FormularioEditable from './Componentes/Formulario/FormularioEditable';
+import FormularioEditable from './Componentes/Formulario/formularioEditable';
 import LandingPreview from './Componentes/LandingPreview';
 
 import Plantilla1 from './Componentes/Generador/Plantilla1';
