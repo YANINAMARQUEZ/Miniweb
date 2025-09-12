@@ -1,0 +1,28 @@
+.selector-plantilla {
+  margin: 2rem 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.selector-plantilla label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.selector-plantilla select {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: border-color 0.3s ease;
+}
+
+.selector-plantilla select:focus {
+  border-color: #d4af37; /* Dorado institucional */
+  outline: none;
+}
