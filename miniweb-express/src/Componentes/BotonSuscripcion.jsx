@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 /**
- * Botón institucional para iniciar suscripción con Mercado Pago.
+ * Botón para iniciar suscripción con Mercado Pago y habilitar descarga.
  * Props:
  * - nombrePlantilla: string (ej. "InstitucionalPremium")
  * - precio: número (ej. 1500)
@@ -66,7 +66,7 @@ const BotonSuscripcion = ({ nombrePlantilla, precio }) => {
         disabled={cargando}
         style={{
           padding: '1rem 2rem',
-          backgroundColor: '#0077B6',
+          backgroundColor: '#00b894',
           color: '#fff',
           border: 'none',
           borderRadius: '8px',
@@ -77,7 +77,7 @@ const BotonSuscripcion = ({ nombrePlantilla, precio }) => {
           transition: 'opacity 0.3s ease',
         }}
       >
-        {cargando ? 'Conectando con Mercado Pago...' : '💳 Suscribirme'}
+        {cargando ? 'Procesando pago...' : '🧾 Pagar y descargar'}
       </button>
     </div>
   );
