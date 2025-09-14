@@ -13,27 +13,32 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
   const [cargando, setCargando] = useState(false);
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
-fetch('https://tu-backend.onrender.com/simular-pago', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ email: userEmail })
-})
-.then(res => res.json())
-.then(data => {
-  if (data.status === 'approved') {
-    // Mostrar link de descarga o redirigir
-    alert('Pago simulado exitoso. Descargando...');
-    window.location.href = '/descargar-archivo';
-  } else {
-    alert('Pago fallido');
-  }
-})
-.catch(err => {
-  console.error('Error al simular pago:', err);
-});
+  const simularPago = () => {
+    if (!email) {
+      alert('Ingresá tu email para simular el pago.');
+      return;
+    }
 
+    fetch('https://miniweb-backend.onrender.com/simular-pago', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'approved') {
+          alert('Pago simulado exitoso. Descargando...');
+          window.location.href = '/descargar-archivo';
+        } else {
+          alert('Pago fallido');
+        }
+      })
+      .catch(err => {
+        console.error('Error al simular pago:', err);
+      });
+  };
 
   const iniciarPago = async () => {
     if (!nombrePlantilla || !precio || !email) {
@@ -100,6 +105,23 @@ fetch('https://tu-backend.onrender.com/simular-pago', {
         }}
       >
         {cargando ? 'Generando pago...' : '💳 Pagar y descargar HTML'}
+      </button>
+      <br />
+      <button
+        onClick={simularPago}
+        style={{
+          marginTop: '1rem',
+          padding: '0.75rem 1.5rem',
+          backgroundColor: '#90E0EF',
+          color: '#000',
+          border: 'none',
+          borderRadius: '8px',
+          fontWeight: '500',
+          fontSize: '0.95rem',
+          cursor: 'pointer',
+        }}
+      >
+        🧪 Simular pago
       </button>
     </div>
   );
