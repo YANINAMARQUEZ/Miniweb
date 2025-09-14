@@ -13,6 +13,28 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
   const [cargando, setCargando] = useState(false);
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
+fetch('https://tu-backend.onrender.com/simular-pago', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ email: userEmail })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.status === 'approved') {
+    // Mostrar link de descarga o redirigir
+    alert('Pago simulado exitoso. Descargando...');
+    window.location.href = '/descargar-archivo';
+  } else {
+    alert('Pago fallido');
+  }
+})
+.catch(err => {
+  console.error('Error al simular pago:', err);
+});
+
+
   const iniciarPago = async () => {
     if (!nombrePlantilla || !precio || !email) {
       alert('Completá todos los datos para continuar.');
