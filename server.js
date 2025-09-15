@@ -15,16 +15,18 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Nueva ruta institucional para consulta desde frontend
+app.get('/api/consulta', (req, res) => {
+  res.json({ mensaje: 'Consulta recibida correctamente desde el backend institucional' });
+});
+
+
 // Ruta raíz
 app.get('/', (req, res) => {
   res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
   res.send('Bienvenido a la API de Miniweb');
 });
 
-// Nueva ruta institucional para consulta desde frontend
-app.get('/api/consulta', (req, res) => {
-  res.json({ mensaje: 'Consulta recibida correctamente desde el backend institucional' });
-});
 
 
 // Simulación de pago
