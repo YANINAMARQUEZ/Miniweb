@@ -23,8 +23,7 @@ app.get('/', (req, res) => {
 app.post('/success', (req, res) => {
   const { status } = req.query;
 
-  // Política CSP que permite estilos inline
-  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
+  
 
   if (status === 'approved') {
     res.send(`
