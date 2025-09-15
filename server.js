@@ -2,10 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const API_BASE = process.env.VITE_API_URL;
-
-
-
-const app = express();
 const PORT = process.env.PORT || 4000;
 app.use(cors({
   origin: [
@@ -14,7 +10,7 @@ app.use(cors({
   ],
   credentials: true
 }));
-
+app.use(express.json());
 
 // Ruta raíz
 app.get('/', (req, res) => {
