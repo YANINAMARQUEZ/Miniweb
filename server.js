@@ -11,6 +11,8 @@ app.use(cors({
     'https://miniweb-4xt9flav7-yaninas-projects-7fe646ae.vercel.app',
     'https://miniweb-git-main-yaninas-projects-7fe646ae.vercel.app'
   ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
   credentials: true
 }));
 app.use(express.json());
