@@ -8,18 +8,17 @@ const PORT = process.env.PORT || 4000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
 
 // Ruta raíz
 app.get('/', (req, res) => {
+  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
   res.send('Bienvenido a la API de Miniweb');
 });
 
 // Endpoint que simula la aprobación del pago
 app.post('/success', (req, res) => {
   const { status } = req.query;
-
-  
+  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
 
   if (status === 'approved') {
     res.send(`
@@ -30,7 +29,7 @@ app.post('/success', (req, res) => {
           <title>Pago aprobado</title>
           <style>
             body {
-              font-family: 'Poppins',         sans-serif;
+              font-family: 'Poppins', sans-serif;
               background: #fdfdfd;
               color: #333;
               text-align: center;
@@ -90,8 +89,9 @@ app.post('/success', (req, res) => {
 // Endpoint para instrucciones de pago por transferencia
 app.get('/transferencia', (req, res) => {
   const { template } = req.query;
+  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
 
-  
+  res.send(`
     <!DOCTYPE html>
     <html lang="es">
       <head>
@@ -201,4 +201,3 @@ app.get('/descargar-html', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
-
