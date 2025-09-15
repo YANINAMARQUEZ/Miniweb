@@ -8,8 +8,9 @@ const API_BASE = process.env.VITE_API_URL;
 const PORT = process.env.PORT || 4000;
 app.use(cors({
   origin: [
-    'https://miniweb-4xt9flav7-yaninas-projects-7fe646ae.vercel.app',
-    'https://miniweb-git-main-yaninas-projects-7fe646ae.vercel.app'
+    'https://miniweb-five.vercel.app',
+    'https://miniweb-git-main-yaninas-proyectos-7fe646ae.vercel.app',
+    'https://miniweb-jxde9we9h-yaninas-proyectos-7fe646ae.vercel.app'
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
