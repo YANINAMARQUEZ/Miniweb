@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const API_BASE = import.meta.env.VITE_API_URL;
+const API_BASE = process.env.VITE_API_URL;
+
 
 
 const app = express();
