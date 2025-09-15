@@ -73,3 +73,41 @@ app.get('/transferencia', (req, res) => {
           <p class="info">Una vez realizada la transferencia, haga clic en el botón para descargar su plantilla.</p>
           <a href="/descargar-html?nombre=${template}" target="_blank">Descargar Plantilla</a>
         </div>
+      </body>
+    </html>
+  `);
+});
+
+// Descarga de plantilla
+app.get('/descargar-html', (req, res) => {
+  const { nombre } = req.query;
+  const safeNombre = nombre || 'plantilla';
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="es">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Plantilla de ${safeNombre}</title>
+        <style>
+          body { font-family: 'Poppins', sans-serif; background: #fdfdfd; color: #333; text-align: center; padding: 3rem; margin: 0; }
+          h1 { color: #0055A5; font-size: 2rem; margin-bottom: 1rem; }
+          p { font-size: 1.2rem; }
+        </style>
+      </head>
+      <body>
+        <h1>Gracias por su compra (${safeNombre})</h1>
+        <p>Aquí se descarga su plantilla institucional.</p>
+      </body>
+    </html>
+  `;
+
+  res.setHeader('Content-Disposition', `attachment; filename=${safeNombre}.html`);
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`✅ Servidor escuchando en http://localhost:${PORT}`);
+});
