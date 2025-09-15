@@ -19,6 +19,12 @@ app.get('/', (req, res) => {
   res.send('Bienvenido a la API de Miniweb');
 });
 
+// Nueva ruta institucional para consulta desde frontend
+app.get('/api/consulta', (req, res) => {
+  res.json({ mensaje: 'Consulta recibida correctamente desde el backend institucional' });
+});
+
+
 // Simulación de pago
 app.post('/simular-pago', (req, res) => {
   const { email } = req.body;
