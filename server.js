@@ -6,7 +6,10 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://miniweb-4xt9flav7-yaninas-projects-7fe646ae.vercel.app',
+  credentials: true
+}));
 app.use(express.json());
 
 // Ruta raíz
