@@ -4,7 +4,10 @@ import axios from 'axios';
 const BotonPago = ({ nombrePlantilla, precio }) => {
   const [email, setEmail] = useState('');
   const [cargando, setCargando] = useState(false);
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
+  // Variables de entorno
+  const API_BASE = import.meta.env.VITE_API_URL;
+  const nombreEmpresa = import.meta.env.VITE_NOMBRE_EMPRESA;
 
   const simularPago = () => {
     if (!email) {
@@ -20,14 +23,15 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
       .then(res => res.json())
       .then(data => {
         if (data.status === 'approved') {
-          alert('Pago simulado exitoso. Redirigiendo...');
-          window.location.href = `${API_BASE}/transferencia?template=${nombrePlantilla}`;
+          alert('✅ Pago simulado exitoso. Redirigiendo...');
+          window.location.href = `${API_BASE}/transferencia?template=${encodeURIComponent(nombrePlantilla)}`;
         } else {
-          alert('Pago fallido');
+          alert('❌ Pago fallido');
         }
       })
       .catch(err => {
         console.error('Error al simular pago:', err);
+        alert('Hubo un error al simular el pago.');
       });
   };
 
@@ -63,6 +67,7 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
 
   return (
     <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+      <h2>Generador de pago - {nombreEmpresa}</h2>
       <input
         type="email"
         placeholder="Ingresá tu email"
