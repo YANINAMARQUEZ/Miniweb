@@ -15,75 +15,25 @@ app.get('/', (req, res) => {
   res.send('Bienvenido a la API de Miniweb');
 });
 
-// Endpoint que simula la aprobación del pago
-app.post('/success', (req, res) => {
-  const { status } = req.query;
-  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
+// Simulación de pago (para botón 🧪 Simular pago)
+app.post('/simular-pago', (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email requerido' });
 
-  if (status === 'approved') {
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8" />
-          <title>Pago aprobado</title>
-          <style>
-            body {
-              font-family: 'Poppins', sans-serif;
-              background: #fdfdfd;
-              color: #333;
-              text-align: center;
-              padding: 3rem;
-              margin: 0;
-            }
-            h1 {
-              color: #28a745;
-              margin-bottom: 1rem;
-              font-size: 2rem;
-            }
-            p {
-              font-size: 1.2rem;
-            }
-          </style>
-          <script>
-            setTimeout(() => {
-              window.location.href = '/transferencia?template=InstitucionalPremium';
-            }, 1500);
-          </script>
-        </head>
-        <body>
-          <h1>✅ Pago aprobado</h1>
-          <p>Por favor, siga las instrucciones para realizar el pago por transferencia.</p>
-        </body>
-      </html>
-    `);
-  } else {
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8" />
-          <title>Pago no aprobado</title>
-          <style>
-            body {
-              font-family: 'Poppins', sans-serif;
-              background: #fff0f0;
-              color: #a00;
-              text-align: center;
-              padding: 3rem;
-              margin: 0;
-            }
-            h2 {
-              font-size: 1.8rem;
-            }
-          </style>
-        </head>
-        <body>
-          <h2>❌ Pago no aprobado</h2>
-        </body>
-      </html>
-    `);
+  // Simulación simple
+  res.json({ status: 'approved' });
+});
+
+// Crear suscripción (para botón 💳 Pagar y descargar HTML)
+app.post('/crear-suscripcion', (req, res) => {
+  const { email, nombrePlantilla, precio } = req.body;
+  if (!email || !nombrePlantilla || !precio) {
+    return res.status(400).json({ error: 'Faltan datos' });
   }
+
+  // Simulación de integración con Mercado Pago
+  const url = `https://www.mercadopago.com.ar/checkout?template=${encodeURIComponent(nombrePlantilla)}&price=${precio}`;
+  res.json({ url });
 });
 
 // Endpoint para instrucciones de pago por transferencia
@@ -155,7 +105,7 @@ app.get('/transferencia', (req, res) => {
   `);
 });
 
-// Endpoint para generar y descargar el HTML de la plantilla
+// Descargar plantilla HTML
 app.get('/descargar-html', (req, res) => {
   const { nombre } = req.query;
   const safeNombre = nombre || 'plantilla';
