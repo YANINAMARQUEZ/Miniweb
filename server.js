@@ -5,12 +5,15 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middleware
+const cors = require('cors');
+
 app.use(cors({
   origin: 'https://miniweb-4xt9flav7-yaninas-projects-7fe646ae.vercel.app',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
   credentials: true
 }));
-app.use(express.json());
+
 
 // Ruta raíz
 app.get('/', (req, res) => {
