@@ -1,7 +1,3 @@
-
-
-
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -34,7 +30,7 @@ app.post('/success', (req, res) => {
           <title>Pago aprobado</title>
           <style>
             body {
-              font-family: 'Poppins', sans-serif;
+              font-family: 'Poppins',         sans-serif;
               background: #fdfdfd;
               color: #333;
               text-align: center;
@@ -95,9 +91,7 @@ app.post('/success', (req, res) => {
 app.get('/transferencia', (req, res) => {
   const { template } = req.query;
 
-  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
-
-  res.send(`
+  
     <!DOCTYPE html>
     <html lang="es">
       <head>
