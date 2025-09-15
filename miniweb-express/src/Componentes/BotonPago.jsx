@@ -7,6 +7,15 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
 
   // Variables de entorno
   const API_BASE = import.meta.env.VITE_API_URL;
+fetch(`${API_BASE}/api/consulta`)
+  .then(response => response.json())
+  .then(data => {
+    console.log('✅ Respuesta del backend:', data);
+  })
+  .catch(error => {
+    console.error('❌ Error al consultar la API:', error);
+  });
+  
   const nombreEmpresa = import.meta.env.VITE_NOMBRE_EMPRESA;
 
   const simularPago = () => {
