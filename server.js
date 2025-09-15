@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -14,22 +15,23 @@ app.get('/', (req, res) => {
   res.send('Bienvenido a la API de Miniweb');
 });
 
-// Simulación de pago
+// Simulación de pago (para botón 🧪 Simular pago)
 app.post('/simular-pago', (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'Email requerido' });
+
   res.json({ status: 'approved' });
 });
 
-// Crear suscripción (simulada)
+// Crear suscripción (simulada para botón 💳 Pagar y descargar HTML)
 app.post('/crear-suscripcion', (req, res) => {
   const { email, nombrePlantilla, precio } = req.body;
   if (!email || !nombrePlantilla || !precio) {
     return res.status(400).json({ error: 'Faltan datos' });
   }
 
-  // Redirige a la página de transferencia como simulación
-  const url = `https://miniweb-backend.onrender.com/transferencia?template=${encodeURIComponent(nombrePlantilla)}`;
+  // Simulación: redirige a la página de transferencia
+  const url = `${process.env.VITE_API_URL || 'https://miniweb-46n0.onrender.com'}/transferencia?template=${encodeURIComponent(nombrePlantilla)}`;
   res.json({ url });
 });
 
@@ -102,4 +104,49 @@ app.get('/transferencia', (req, res) => {
   `);
 });
 
-//
+// Descarga de plantilla HTML
+app.get('/descargar-html', (req, res) => {
+  const { nombre } = req.query;
+  const safeNombre = nombre || 'plantilla';
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="es">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Plantilla de ${safeNombre}</title>
+        <style>
+          body {
+            font-family: 'Poppins', sans-serif;
+            background: #fdfdfd;
+            color: #333;
+            text-align: center;
+            padding: 3rem;
+            margin: 0;
+          }
+          h1 {
+            color: #0055A5;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+          }
+          p {
+            font-size: 1.2rem;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Gracias por su compra (${safeNombre})</h1>
+        <p>Aquí se descarga su plantilla institucional.</p>
+      </body>
+    </html>
+  `;
+
+  res.setHeader('Content-Disposition', `attachment; filename=${safeNombre}.html`);
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
+});
+
+// Iniciar el servidor
+app.listen(PORT, () => {
+  console.log(`✅ Servidor escuchando en http://localhost:${PORT}`);
+});
