@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const BotonPago = ({ nombrePlantilla, precio }) => {
   const [email, setEmail] = useState('');
   const [cargando, setCargando] = useState(false);
 
-  // Variables de entorno
   const API_BASE = import.meta.env.VITE_API_URL;
-fetch(`${API_BASE}/api/consulta`)
-  .then(response => response.json())
-  .then(data => {
-    console.log('✅ Respuesta del backend:', data);
-  })
-  .catch(error => {
-    console.error('❌ Error al consultar la API:', error);
-  });
-  
   const nombreEmpresa = import.meta.env.VITE_NOMBRE_EMPRESA;
+
+  // Consulta institucional al backend al montar el componente
+  useEffect(() => {
+    fetch(`${API_BASE}/api/consulta`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('✅ Respuesta del backend:', data);
+      })
+      .catch(error => {
+        console.error('❌ Error al consultar la API:', error);
+      });
+  }, [API_BASE]);
 
   const simularPago = () => {
     if (!email) {
