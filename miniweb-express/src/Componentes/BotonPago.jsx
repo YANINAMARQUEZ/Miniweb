@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-/**
- * Botón institucional para generar pagos automáticos con email.
- * Props:
- * - nombrePlantilla: string (ej. "Plantilla 10")
- * - precio: número (ej. 1500)
- */
-
 const BotonPago = ({ nombrePlantilla, precio }) => {
   const [email, setEmail] = useState('');
   const [cargando, setCargando] = useState(false);
@@ -19,18 +12,16 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
       return;
     }
 
-    fetch('https://miniweb-backend.onrender.com/simular-pago', {
+    fetch(`${API_BASE}/simular-pago`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
     })
       .then(res => res.json())
       .then(data => {
         if (data.status === 'approved') {
-          alert('Pago simulado exitoso. Descargando...');
-          window.location.href = '/descargar-archivo';
+          alert('Pago simulado exitoso. Redirigiendo...');
+          window.location.href = `${API_BASE}/transferencia?template=${nombrePlantilla}`;
         } else {
           alert('Pago fallido');
         }
@@ -58,13 +49,13 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
       const { url } = response.data;
 
       if (url) {
-        window.location.href = url; // Redirige a Mercado Pago
+        window.location.href = url;
       } else {
-        alert('No se recibió un enlace válido de Mercado Pago.');
+        alert('No se recibió un enlace válido.');
       }
     } catch (error) {
       console.error('Error al iniciar el pago:', error.response || error.message);
-      alert('No se pudo iniciar el pago.');
+      alert('No se pudo realizar el pago.');
     } finally {
       setCargando(false);
     }
