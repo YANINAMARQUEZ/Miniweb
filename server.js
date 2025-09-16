@@ -3,11 +3,12 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-
-const API_BASE = process.env.VITE_API_URL;
 const PORT = process.env.PORT || 4000;
+const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || 'https://miniweb-46n0.onrender.com';
+
 app.use(cors({
   origin: [
+    'https://miniweb-six.vercel.app',
     'https://miniweb-five.vercel.app',
     'https://miniweb-git-main-yaninas-proyectos-7fe646ae.vercel.app',
     'https://miniweb-jxde9we9h-yaninas-proyectos-7fe646ae.vercel.app'
@@ -16,21 +17,21 @@ app.use(cors({
   allowedHeaders: ['Content-Type'],
   credentials: true
 }));
+
 app.use(express.json());
 
-// Nueva ruta institucional para consulta desde frontend
+/* ------------------ RUTAS ------------------ */
+
+// Consulta institucional
 app.get('/api/consulta', (req, res) => {
   res.json({ mensaje: 'Consulta recibida correctamente desde el backend institucional' });
 });
-
 
 // Ruta raíz
 app.get('/', (req, res) => {
   res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
   res.send('Bienvenido a la API de Miniweb');
 });
-
-
 
 // Simulación de pago
 app.post('/simular-pago', (req, res) => {
@@ -46,7 +47,7 @@ app.post('/crear-suscripcion', (req, res) => {
     return res.status(400).json({ error: 'Faltan datos' });
   }
 
-  const url = `${process.env.VITE_API_URL || 'https://miniweb-backend.onrender.com'}/transferencia?template=${encodeURIComponent(nombrePlantilla)}`;
+  const url = `${BACKEND_BASE_URL}/transferencia?template=${encodeURIComponent(nombrePlantilla)}`;
   res.json({ url });
 });
 
@@ -79,7 +80,7 @@ app.get('/transferencia', (req, res) => {
             <strong>DNI:</strong> 37.159.913
           </p>
           <p class="info">Una vez realizada la transferencia, haga clic en el botón para descargar su plantilla.</p>
-          <a href="/descargar-html?nombre=${template}" target="_blank">Descargar Plantilla</a>
+          <a href="${BACKEND_BASE_URL}/descargar-html?nombre=${template}" target="_blank">Descargar Plantilla</a>
         </div>
       </body>
     </html>
@@ -88,34 +89,4 @@ app.get('/transferencia', (req, res) => {
 
 // Descarga de plantilla
 app.get('/descargar-html', (req, res) => {
-  const { nombre } = req.query;
-  const safeNombre = nombre || 'plantilla';
-
-  const html = `
-    <!DOCTYPE html>
-    <html lang="es">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Plantilla de ${safeNombre}</title>
-        <style>
-          body { font-family: 'Poppins', sans-serif; background: #fdfdfd; color: #333; text-align: center; padding: 3rem; margin: 0; }
-          h1 { color: #0055A5; font-size: 2rem; margin-bottom: 1rem; }
-          p { font-size: 1.2rem; }
-        </style>
-      </head>
-      <body>
-        <h1>Gracias por su compra (${safeNombre})</h1>
-        <p>Aquí se descarga su plantilla institucional.</p>
-      </body>
-    </html>
-  `;
-
-  res.setHeader('Content-Disposition', `attachment; filename=${safeNombre}.html`);
-  res.setHeader('Content-Type', 'text/html');
-  res.send(html);
-});
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`✅ Servidor escuchando en http://localhost:${PORT}`);
-});
+  const {
