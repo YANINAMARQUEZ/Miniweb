@@ -28,16 +28,21 @@ const BotonSuscripcion = ({ nombrePlantilla, precio }) => {
         precio,
       });
 
-      const { url } = response.data;
+      const initPoint = response?.data?.url;
 
-      if (url) {
-        window.location.href = url; // Redirige a Mercado Pago
+      if (initPoint && typeof initPoint === 'string') {
+        window.location.href = initPoint;
       } else {
+        console.warn('Respuesta inesperada:', response.data);
         alert('No se recibió un enlace válido de Mercado Pago.');
       }
     } catch (error) {
-      console.error('Error al iniciar la suscripción:', error.response || error.message);
-      alert('No se pudo iniciar la suscripción. Verificá tu conexión o intentá más tarde.');
+      const mensaje =
+        error?.response?.data?.error ||
+        error?.message ||
+        'Error desconocido al iniciar la suscripción.';
+      console.error('Error al iniciar la suscripción:', mensaje);
+      alert(`No se pudo iniciar la suscripción: ${mensaje}`);
     } finally {
       setCargando(false);
     }
