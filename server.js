@@ -3,9 +3,26 @@ const express = require('express');
 const cors = require('cors');
 const mercadopago = require('mercadopago');
 
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || 'https://tu-backend.onrender.com';
+const { Pool } = require('pg');
+
+const db = new Pool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  ssl: { rejectUnauthorized: false }
+});
+
+db.connect()
+  .then(() => console.log('✅ Conexión a PostgreSQL establecida'))
+  .catch(err => console.error('❌ Error de conexión:', err));
+
+
 
 // Configurar Mercado Pago con tu Access Token
 
