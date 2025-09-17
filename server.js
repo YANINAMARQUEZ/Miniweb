@@ -8,9 +8,9 @@ const PORT = process.env.PORT || 4000;
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || 'https://tu-backend.onrender.com';
 
 // Configurar Mercado Pago con tu Access Token
-mercadopago.configure({
-  access_token: process.env.MP_ACCESS_TOKEN
-});
+
+mercadopago.access_token = process.env.MP_ACCESS_TOKEN;
+
 
 app.use(cors({
   origin: ['https://tu-frontend.vercel.app'],
