@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -48,4 +49,3 @@ app.post('/validar-descarga', (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Backend institucional activo en http://localhost:${PORT}`);
 });
-
