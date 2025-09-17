@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -38,34 +39,39 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
     }
   };
 
-  const solicitarDescarga = async () => {
-    const htmlFinal = `
-      <!DOCTYPE html>
-      <html lang="es">
-        <head>
-          <meta charset="UTF-8" />
-          <title>Plantilla personalizada</title>
-        </head>
-        <body>
-          ${contenidoEditado}
-        </body>
-      </html>
-    `;
-
+  const descargarHTML = async () => {
     try {
-      const res = await axios.post(`${API_BASE}/validar-descarga`, {
-        email,
-        html: htmlFinal,
-        nombrePlantilla,
+      const res = await axios.get(`${API_BASE}/verificar-pago`, {
+        params: { email, nombrePlantilla },
       });
 
-      if (res.data.autorizado && res.data.link) {
-        window.location.href = res.data.link;
-      } else {
-        alert('❌ El pago no fue aprobado o la descarga no está habilitada.');
+      if (!res.data.aprobado) {
+        alert('❌ El pago no fue aprobado.');
+        return;
       }
+
+      const htmlFinal = `
+        <!DOCTYPE html>
+        <html lang="es">
+          <head>
+            <meta charset="UTF-8" />
+            <title>Plantilla personalizada</title>
+          </head>
+          <body>
+            ${contenidoEditado}
+          </body>
+        </html>
+      `;
+
+      const blob = new Blob([htmlFinal], { type: 'text/html' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${nombrePlantilla}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
-      console.error('Error al solicitar descarga:', error);
+      console.error('Error al verificar el pago:', error);
       alert('No se pudo verificar el estado del pago.');
     }
   };
@@ -92,7 +98,7 @@ const BotonPago = ({ nombrePlantilla, precio }) => {
         {cargando ? 'Procesando pago...' : '💳 Pagar ahora'}
       </button>
       <br />
-      <button onClick={solicitarDescarga} style={{ padding: '0.75rem 1.5rem' }}>
+      <button onClick={descargarHTML} style={{ padding: '0.75rem 1.5rem' }}>
         ⬇️ Descargar plantilla (requiere pago aprobado)
       </button>
     </div>
