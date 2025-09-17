@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+
 
 const BotonPago = ({ nombrePlantilla, precio }) => {
   const [email, setEmail] = useState('');
