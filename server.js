@@ -1,124 +1,118 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+const mercadopago = require('mercadopago');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || 'https://miniweb-46n0.onrender.com';
+const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || 'https://tu-backend.onrender.com';
+
+// Configurar Mercado Pago con tu Access Token
+mercadopago.configure({
+  access_token: process.env.MP_ACCESS_TOKEN
+});
 
 app.use(cors({
-  origin: [
-    'https://miniweb-six.vercel.app',
-    'https://miniweb-five.vercel.app',
-    'https://miniweb-git-main-yaninas-proyectos-7fe646ae.vercel.app',
-    'https://miniweb-jxde9we9h-yaninas-proyectos-7fe646ae.vercel.app'
-  ],
-  methods: ['GET', 'POST', 'OPTIONS'],
+  origin: ['https://tu-frontend.vercel.app'],
+  methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
-  credentials: true
 }));
-
 app.use(express.json());
+
+// Base de datos simulada (reemplazar por MongoDB o PostgreSQL)
+const pagosAprobados = new Set();
 
 /* ------------------ RUTAS ------------------ */
 
-// Consulta institucional
-app.get('/api/consulta', (req, res) => {
-  res.json({ mensaje: 'Consulta recibida correctamente desde el backend institucional' });
-});
-
-// Ruta raíz
-app.get('/', (req, res) => {
-  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
-  res.send('Bienvenido a la API de Miniweb');
-});
-
-// Simulación de pago
-app.post('/simular-pago', (req, res) => {
-  const { email } = req.body;
-  if (!email) return res.status(400).json({ error: 'Email requerido' });
-  res.json({ status: 'approved' });
-});
-
-// Crear suscripción
-app.post('/crear-suscripcion', (req, res) => {
+// Crear preferencia de pago con tarjeta
+app.post('/crear-pago', async (req, res) => {
   const { email, nombrePlantilla, precio } = req.body;
+
   if (!email || !nombrePlantilla || !precio) {
-    return res.status(400).json({ error: 'Faltan datos' });
+    return res.status(400).json({ error: 'Faltan datos para generar el pago.' });
   }
 
-  const url = `${BACKEND_BASE_URL}/transferencia?template=${encodeURIComponent(nombrePlantilla)}`;
-  res.json({ url });
+  try {
+    const preference = await mercadopago.preferences.create({
+      items: [{
+        title: `Plantilla: ${nombrePlantilla}`,
+        unit_price: Number(precio),
+        quantity: 1
+      }],
+      payer: { email },
+      back_urls: {
+        success: `${BACKEND_BASE_URL}/pago-aprobado?email=${email}&nombrePlantilla=${nombrePlantilla}`,
+        failure: `${BACKEND_BASE_URL}/pago-fallido`,
+      },
+      auto_return: 'approved',
+      notification_url: `${BACKEND_BASE_URL}/webhook`
+    });
+
+    res.json({ url: preference.body.init_point });
+  } catch (error) {
+    console.error('❌ Error al crear preferencia:', error);
+    res.status(500).json({ error: 'No se pudo generar el pago.' });
+  }
 });
 
-// Página de transferencia
-app.get('/transferencia', (req, res) => {
-  const { template } = req.query;
-  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
+// Webhook de Mercado Pago
+app.post('/webhook', async (req, res) => {
+  const { type, data } = req.body;
+
+  if (type === 'payment') {
+    try {
+      const payment = await mercadopago.payment.findById(data.id);
+      if (payment.body.status === 'approved') {
+        const email = payment.body.payer.email;
+        const nombrePlantilla = payment.body.additional_info?.items?.[0]?.title?.split(': ')[1] || 'plantilla';
+        const clave = `${email}-${nombrePlantilla}`;
+        pagosAprobados.add(clave);
+        console.log(`✅ Pago aprobado: ${clave}`);
+      }
+    } catch (error) {
+      console.error('❌ Error al procesar webhook:', error);
+    }
+  }
+
+  res.sendStatus(200);
+});
+
+// Verificar si el pago fue aprobado
+app.get('/verificar-pago', (req, res) => {
+  const { email, nombrePlantilla } = req.query;
+  const clave = `${email}-${nombrePlantilla}`;
+  const aprobado = pagosAprobados.has(clave);
+  res.json({ aprobado });
+});
+
+// Página de confirmación
+app.get('/pago-aprobado', (req, res) => {
   res.send(`
-    <!DOCTYPE html>
-    <html lang="es">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Transferencia bancaria - ${template}</title>
-        <style>
-          body { font-family: 'Poppins', sans-serif; background: #fdfdfd; color: #333; text-align: center; padding: 2rem; margin: 0; }
-          .container { max-width: 600px; margin: 0 auto; padding: 2rem; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-          h1 { color: #0055A5; margin-bottom: 1rem; }
-          .info { margin: 1rem 0; font-size: 1rem; line-height: 1.6; }
-          a { display: inline-block; margin-top: 1.5rem; padding: 0.75rem 1.5rem; background-color: #0055A5; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>Pago por transferencia</h1>
-          <p class="info">
-            Realice la transferencia bancaria a la siguiente cuenta:<br><br>
-            <strong>Banco:</strong> Banco Macro<br>
-            <strong>Cuenta:</strong> 1234567890<br>
-            <strong>Titular:</strong> MARQUEZ Rivero Damiana Yanina<br>
-            <strong>DNI:</strong> 37.159.913
-          </p>
-          <p class="info">Una vez realizada la transferencia, haga clic en el botón para descargar su plantilla.</p>
-          <a href="${BACKEND_BASE_URL}/descargar-html?nombre=${template}" target="_blank">Descargar Plantilla</a>
-        </div>
+    <html>
+      <head><title>Pago aprobado</title></head>
+      <body style="font-family: sans-serif; text-align: center; padding: 2rem;">
+        <h1>✅ Pago aprobado</h1>
+        <p>Volvé al editor para descargar tu plantilla personalizada.</p>
       </body>
     </html>
   `);
 });
 
-// Descarga de plantilla
-app.get('/descargar-html', (req, res) => {
-  const { nombre } = req.query;
-  const safeNombre = nombre || 'plantilla';
-
-  const html = `
-    <!DOCTYPE html>
-    <html lang="es">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Plantilla de ${safeNombre}</title>
-        <style>
-          body { font-family: 'Poppins', sans-serif; background: #fdfdfd; color: #333; text-align: center; padding: 3rem; margin: 0; }
-          h1 { color: #0055A5; font-size: 2rem; margin-bottom: 1rem; }
-          p { font-size: 1.2rem; }
-        </style>
-      </head>
-      <body>
-        <h1>Gracias por su compra (${safeNombre})</h1>
-        <p>Aquí se descarga su plantilla institucional.</p>
+// Página de fallo
+app.get('/pago-fallido', (req, res) => {
+  res.send(`
+    <html>
+      <head><title>Pago fallido</title></head>
+      <body style="font-family: sans-serif; text-align: center; padding: 2rem;">
+        <h1>❌ El pago no fue aprobado</h1>
+        <p>Intentá nuevamente desde el editor.</p>
       </body>
     </html>
-  `;
-
-  res.setHeader('Content-Disposition', `attachment; filename=${safeNombre}.html`);
-  res.setHeader('Content-Type', 'text/html');
-  res.send(html);
+  `);
 });
 
 /* ------------------ INICIO ------------------ */
 app.listen(PORT, () => {
-  console.log(`✅ Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`✅ Backend institucional activo en http://localhost:${PORT}`);
 });
+
